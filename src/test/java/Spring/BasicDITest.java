@@ -13,10 +13,22 @@ import org.springframework.context.support.ClassPathXmlApplicationContext;
  */
 public class BasicDITest {
     @Test 
-    public void testSomeLibraryMethod() {
-    	// create and configure beans
+    public void testSrpingCotainer() {
+    	//Arrange
     	ApplicationContext context = new ClassPathXmlApplicationContext(new String[] {"spring.xml"});
-        SomeLibrary classUnderTest = context.getBean("library", SomeLibrary.class);
-        assertTrue("someLibraryMethod should return 'true'", classUnderTest.someLibraryMethod());
+        //Act
+    	SomeLibrary classUnderTest = context.getBean("library", SomeLibrary.class);
+        //Assert
+    	assertTrue("the return object should not null", classUnderTest!=null);
+    }
+    @Test 
+    public void testDifferentXmlPathRepresentation() {
+    	//Arrange
+    	String xmlPath = "classpath:/spring.xml";
+    	ApplicationContext context = new ClassPathXmlApplicationContext(new String[] {xmlPath});
+        //Act
+    	SomeLibrary classUnderTest = context.getBean("library", SomeLibrary.class);
+        //Assert
+    	assertTrue("the return object should not null", classUnderTest!=null);
     }
 }
