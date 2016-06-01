@@ -1,0 +1,27 @@
+apply plugin: 'java'
+apply plugin: 'eclipse-wtp'	
+
+compileJava.options.encoding = 'UTF-8'
+compileTestJava.options.encoding = 'UTF-8'
+
+sourceCompatibility = 1.7
+targetCompatibility = 1.7
+
+
+repositories {
+    jcenter()
+}
+dependencies {
+	compile 'org.mybatis:mybatis:3.4.0'
+}
+
+sourceSets {
+    main {
+        java {  srcDir 'src/main/java'  }
+        resources {srcDir 'web/main/resources'}
+    }
+    test {
+    	java {srcDir 'src/test/unit_test'}
+        resources {srcDir 'web/test/resources'}
+    }
+}
