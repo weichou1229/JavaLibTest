@@ -5,7 +5,7 @@
         http://www.springframework.org/schema/beans/spring-beans.xsd">
 
 
-    <bean id="library" class="Spring.SomeLibrary">
+    <bean id="library" class="spring.SomeLibrary">
 
     </bean>
 
