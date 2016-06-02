@@ -19,22 +19,28 @@ import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.ss.usermodel.WorkbookFactory;
 
 public class Excel {
+	private List<ExcelColumn> columns;
+	private List<Map<String, Object>> rows;
 	StrSubstitutor sub = new StrSubstitutor();
 	
-	public Excel read_Excel(String fileSource ,int sheetNo) throws Exception{
+	public List<ExcelColumn> columns(){
+		return this.columns;
+	}
+	public List<Map<String, Object>> rows(){
+		return this.rows;
+	}	
+	
+	public Excel read_Excel_to_listMap(String fileSource ,int sheetNo) throws Exception{
 		try {
-			//input
-			Workbook wb = WorkbookFactory.create(new FileInputStream(fileSource));
+			//get excel file
+			FileInputStream fi = new FileInputStream(fileSource);
+			Workbook wb = WorkbookFactory.create(fi);
 			Sheet sheet = wb.getSheetAt(sheetNo);
-			Iterator<Row> rows = sheet.rowIterator();
-			List<ExcelColumn> columns = this.fetchColumns_From_FirstRowOfCells(rows.next().cellIterator());
-			//handle
-			String templateString = "我${time}要去 ${place}玩 ~";
-			while(rows.hasNext()){
-				String resultString = this.fetchResultString(templateString,columns,rows.next());
-				System.out.println(resultString);
-			}
-			//output
+			//get all rows
+			Iterator<Row> excelRows = sheet.rowIterator();
+			//convert excel data to java object
+			this.columns = this.fetchColumns_From_FirstRowOfCells(excelRows.next().cellIterator());
+			this.rows = this.fetchRowDatas_from_rows_to_listMap(excelRows);
 			
 			
 		} catch (Exception e) {
@@ -43,14 +49,20 @@ public class Excel {
 		return this;
 	}
 	
-	private String fetchResultString(String templateString, List<ExcelColumn> columns, Row row) {
-		Map valueMap = new HashMap<>();
-		for(ExcelColumn column : columns){
-			Cell cell = row.getCell(column.getNumber());
-			Object value = column.getName().equals("time") ? cell.getDateCellValue() : cell ;
-			valueMap.put(column.getName(), value);
+	private List<Map<String, Object>> fetchRowDatas_from_rows_to_listMap(Iterator<Row> excelRows) {
+		List<Map<String, Object>> rows = new ArrayList<Map<String, Object>>();
+
+		while(excelRows.hasNext()){
+			rows.add(this.fetchValueMap_from_row(excelRows.next()));
 		}
-		return sub.replace(templateString, valueMap);
+		return rows;
+	}
+	private Map<String, Object> fetchValueMap_from_row(Row row){
+		Map<String, Object> valueMap = new HashMap<>();
+		for(ExcelColumn column : columns){
+			valueMap.put(column.getName(),row.getCell(column.getNumber()));	//取出已經設定的欄位 放到Map
+		}
+		return valueMap;
 	}
 
 	/**
